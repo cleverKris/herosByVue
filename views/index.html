@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hero - Admin</title>
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.css">
+    <style>
+        .hero-list img {
+            width: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="page-header container">
+            <h1>王者荣耀
+                <small>英雄管理器</small>
+            </h1>
+        </div>
+    </header>
+    <div class="container hero-list">
+        <a class="btn btn-success pull-right" href="/add">添加英雄</a>
+        <a class="btn btn-success pull-right" href="javascript:void (0)" onclick="lotsDelete()">批量删除</a>
+        <table class="table table-hover">
+            <thead>
+            <th>编号</th>
+            <th>名称</th>
+            <th>性别</th>
+            <th>头像</th>
+            <th>操作</th>
+            <th>批量删除</th>
+            </thead>
+            <tbody id="tbody">
+            {{each herosUp}}
+            <tr>
+                <td>{{$value.id}}</td>
+                <td>{{$value.name}}</td>
+                <td>{{$value.gender}}</td>
+                <td><img src="{{$value.img}}"/></td>
+                <!--将当前修改/删除的id提交到地址栏中-->
+                <td><a href="/edit?id={{$value.id}}">修改</a>
+                    <a href="javascript:void (0)" onclick="del({{$value.id}})">删除</a>
+                </td>
+                <!--删除不使用href进行跳转 而是使用事件来触发 del是函数名 相当于在点击事件内调用del函数   参数:是当前删除的id-->
+                <td>
+                    <!--每次选中都将当前选中的id当作请求参数-->
+                    <input type="checkbox" class="checkbox" name="{{$value.id}}">
+                </td>
+            </tr>
+            {{/each}}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        //del实现删除的方法
+        //传进来的是当前删除的id
+        function del(id) {
+            if (confirm('您确定要删除吗?')) {
+                //触发该事件就让页面跳转到该 路径下 然后进行删除的操作
+                window.location = '/delete?id=' + id;
+            }
+        }
+
+        //批量删除
+        function lotsDelete() {
+            let checkboxList = document.getElementsByClassName('checkbox');
+
+            //创建一个空数组
+            let arr = [];
+
+            //循环遍历所有的checkboxList 将选中的name属性中 对应数据库中的id 加入到arr数组中
+            for (var i = 0; i < checkboxList.length; i++) {
+                if (checkboxList[i].checked) {
+                    arr[arr.length] = checkboxList[i].name; //name是每个checkbox的行内属性 对应静态页面渲染过来时的每条数据的id
+                }
+            }
+
+            //console.log(arr); //拿到了每个当前选中的id
+
+            //1.此时的url是:http://localhost:3000/lotsDelete?1,2,3
+            // let idStr = arr.join(','); //将数组的每一项使用字符串拼接
+            // console.log(idStr);//1,2,3
+            //交给url
+            // window.location = + idStr;
+
+
+            //2.比较严谨的地址应该是:http://localhost:3000/lotsDelete?id=1&id=2&id=3
+            let idStr = '';
+            for (var i = 0; i < arr.length - 1; i++) {
+                idStr += `id = ${arr[i]} & `;
+            }
+            idStr += `id = ${arr[arr.length - 1]}`;
+            //console.log(idStr); //id = 2 & id = 3 & id = 4
+
+
+            window.location = '/lotsDelete?' + idStr;
+        }
+
+    </script>
+</body>
+</html>

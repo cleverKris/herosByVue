@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hero - Admin</title>
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.css">
+    <style>
+        .hero-list img {
+            width: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="page-header container">
+            <h1>王者荣耀
+                <small>英雄管理器</small>
+            </h1>
+        </div>
+    </header>
+    <div class="container hero-list">
+        <!--action可以取名为/edit 因为请求方式不一样 所以请求的路径可以相同-->
+        <form id="form" method="post" action="/edit">
+            <!--在对页面进行渲染的时候 已经将id渲染到了这个隐藏域中-->
+            <!--如果没有这个隐藏域,则在post请求时 是获取不到id的-->
+            <!--disable是禁用 不是我们处理id最好的方式-->
+            <input type="hidden" value="{{id}}" name="id">
+            <table class="table table-hover">
+                <!--<tr hidden>-->
+                <!--<td>ID:</td>-->
+                <!--<td><input type="text" value="{{id}}" name="id"></td>-->
+                <!--</tr>-->
+                <tr>
+                    <td>姓名：</td>
+                    <td><input type="text" value="{{name}}" id="name" name="name"></td>
+                </tr>
+                <tr>
+                    <td>性别：</td>
+                    <td>
+                        <!--对radio单选框选中状态作处理-->
+                        {{if(gender == '男')}}
+                        <input type="radio" value="男" id="men" name="gender" checked><label for="men">男</label>
+                        <input type="radio" value="女" id="women" name="gender"><label for="women">女</label>
+                        {{else}}
+                        <input type="radio" value="男" id="men" name="gender"><label for="men">男</label>
+                        <input type="radio" value="女" id="women" name="gender" checked><label for="women">女</label>
+                        {{/if}}
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>头像：</td>
+                    <!--对当前需要被修改的图片进行渲染-->
+                    <td><img id="preImg" src="{{img}}" alt=""><input type="file" name="img"></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="submit" id="btn"></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>

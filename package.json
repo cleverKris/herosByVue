@@ -1,0 +1,23 @@
+{
+  "name": "heros",
+  "version": "1.0.0",
+  "description": "这是王者荣耀的项目",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon ./app.js"
+  },
+  "keywords": [
+    "游戏"
+  ],
+  "author": "kris",
+  "license": "ISC",
+  "dependencies": {
+    "art-template": "^4.13.2",
+    "bootstrap": "^4.3.1",
+    "express": "^4.16.4",
+    "express-art-template": "^1.0.1",
+    "formidable": "^1.2.1",
+    "mysql": "^2.17.1",
+    "nodemon": "^1.19.0"
+  }
+}

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, 
+          maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Kris</title>
+    <script src="./views/vue.js"></script>
+    <!--引入vue-resource-->
+    <script src="./views/vue-resource-1.5.1.js"></script>
+    <!--引入bootstrap-->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+
+    <div id="app">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title text-center">王者荣耀 -By- Vue</h3>
+            </div>
+            <div class="panel-body form-inline">
+                <label>
+                    Name:
+                    <input type="text" class="form-control" v-model="name" v-focus>
+                </label>
+                <label>
+                    Gender:
+                    <input type="text" class="form-control" v-model="gender">
+                </label>
+
+                <input type="button" value="添加" class="btn btn-primary" @click="add">
+            </div>
+        </div>
+
+
+        <table class="table table-bordered table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Gender</th>
+                    <th>Img</th>
+                    <th>Operation</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr v-for="item in list">
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.gender }}</td>
+                    <td>{{ item.img }}</td>
+                    <td>
+                        <a href="#" class="btn btn-danger" @click="del(item.id)">删除</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        //创建一个全局自定义指令,作用:为Name文本框在打开页面时获得焦点
+        // Vue.directive('focus', {
+        //     bind(el) {
+        //         el.focus();
+        //     },
+        //     update(el) { //说明是在update中生效的
+        //         el.focus();
+        //     }
+        // });
+        Vue.directive('focus', (el) => { //这样写 默认在 bind 和 update 触发
+            el.focus();
+        });
+
+
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                list: [],
+                name: '',//Name文本框中的数据
+                gender: ''//Gender文本框中的数据
+            },
+            methods: {
+                //1.使用v-resource发送get请求,获取当前数据库中的所有数据,使用vue的方式完成静态渲染
+                getAllData() {
+                    this.$http.get('http://localhost:3000/').then(result => { //成功信息的回调函数
+                        //注意:返回的数据在result的body中
+                        let {status, data} = result.body;
+                        if (status === 200) {
+                            this.list = data; //绑定到vue实例的数据中
+                        } else {
+                            alert('获取数据失败');
+                        }
+                    })
+                },
+
+                //2.使用v-resource发送post请求,请求的参数:name和gender,并再次请求所有数据
+                add() {
+                    this.$http.post('http://localhost:3000/add', {
+                        name: this.name,
+                        gender: this.gender
+                    }, {emulateJSON: true})
+                        .then(result => {
+                            let {status, msg} = result.body;
+                            if (status === 200) {
+                                alert(msg);
+
+                                //重新获取数据
+                                this.getAllData();
+
+                                //清空文本框
+                                this.name = '';
+                                this.gender = '';
+                            } else {
+                                alert(msg);
+                            }
+                        })
+
+                },
+                //3.使用v-resource发送get请求,请求的参数:id,并再次请求所有数据
+                del(id) {
+                    if (confirm('您确定要删除吗')) {
+                        this.$http.get(`http://localhost:3000/delete?id=${id}`)
+                            .then(result => {
+                                let {status, msg} = result.body;
+                                if (status === 200) {
+                                    alert(msg);
+
+                                    this.getAllData();
+                                } else {
+                                    alert(msg);
+                                }
+                            })
+                    }
+                }
+            },
+            //生命周期钩子函数 对应阶段:data和methods已经初始化完毕 可以访问和使用
+            created() {
+                //调用getAllData方法,发送请求
+                //注意:这是跨域请求 所以需要解决跨域问题
+                this.getAllData();
+            }
+        })
+
+
+    </script>
+
+</body>
+</html>
